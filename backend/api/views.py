@@ -1,16 +1,21 @@
-from django.http import JsonResponse
-import json
+# from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from django.forms.models import model_to_dict # cuts down the tedious work
 
+from products.models import Product
+from products.serializers import ProductSerializer
+
+@api_view(['GET'])
 def api_home(request, *args, **kwargs):
-    #request -> http request in django
+    instance = Product.objects.all().order_by("?").first()
     data = {}
-    body = request.body #byte string of json data
-    try: 
-        data = json.loads(body) #string of json data ->py dict
-    except:
-        pass
-    
-    data['headers'] = dict(request.headers)
-    data['content_type'] = request.content_type
-    data['params'] = request.GET
-    return JsonResponse(data)
+    if instance:
+        # data = model_to_dict(instance, fields = ['id', 'title', 'price'])
+        # the line above does the work of the four lines below
+        # data['id'] = model_data.i  d
+        # data['title'] = model_data.title
+        # data['content'] = model_data.content
+        # data['price'] = model_data.price
+        data = ProductSerializer(instance).data
+    return Response(data)
