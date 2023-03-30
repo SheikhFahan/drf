@@ -1,4 +1,5 @@
 # from django.http import JsonResponse
+# not using from django.http because that needs a csrf token that we don't need8
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.forms.models import model_to_dict # cuts down the tedious work
@@ -6,16 +7,14 @@ from django.forms.models import model_to_dict # cuts down the tedious work
 from products.models import Product
 from products.serializers import ProductSerializer
 
-@api_view(['GET'])
+@api_view(['POST'])
 def api_home(request, *args, **kwargs):
-    instance = Product.objects.all().order_by("?").first()
-    data = {}
-    if instance:
-        # data = model_to_dict(instance, fields = ['id', 'title', 'price'])
-        # the line above does the work of the four lines below
-        # data['id'] = model_data.i  d
-        # data['title'] = model_data.title
-        # data['content'] = model_data.content
-        # data['price'] = model_data.price
-        data = ProductSerializer(instance).data
-    return Response(data)
+    """
+    DRF API View
+    """
+    serializer = ProductSerializer(data = request.data)
+    if serializer.is_valid():
+        instance  = serializer.save()
+        print(instance)
+    # here serializer helps in validating the data  
+    return Response(serializer.data)
