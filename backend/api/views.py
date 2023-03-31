@@ -13,8 +13,9 @@ def api_home(request, *args, **kwargs):
     DRF API View
     """
     serializer = ProductSerializer(data = request.data)
-    if serializer.is_valid():
-        instance  = serializer.save()
-        print(instance)
+    if serializer.is_valid(raise_exception = True):
+        # instance  = serializer.save()
+        print(serializer.data)
+        return Response(serializer.data)
     # here serializer helps in validating the data  
     return Response(serializer.data)
