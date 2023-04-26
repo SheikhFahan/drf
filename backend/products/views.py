@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics , mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 # from django.http import Http_404
@@ -50,6 +50,26 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         super().perform_destroy(instance)
 product_delete_view = ProductDeleteAPIView.as_view()
+
+
+class ProductMixinAPIVeiw(mixins.ListModelMixin, mixins.RetrieveModelMixin, generics.GenericAPIView, 
+    mixins.CreateModelMixin):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'
+    # this needs to be hre cause this is how the fn in designed
+
+    def get(self,request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        if pk is not None:
+            return self.retrieve(request, args, kwargs)
+        return self.list(request,  *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, args, kwargs)
+
+
+product_mixin_view = ProductMixinAPIVeiw.as_view()
+
 
 
 # @api_view(['GET', 'POST'])
