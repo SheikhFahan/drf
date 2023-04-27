@@ -13,3 +13,7 @@ class Product(models.Model):
 
     def get_discount(self):
         return "122"
+
+    # commit line
+# PLqDv78@-25Az
+# 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
