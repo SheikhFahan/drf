@@ -20,3 +20,8 @@ class ProductGenericViewSet(
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+product_list_view = ProductGenericViewSet.as_view({'get' : 'list'})
+product_detail_view = ProductGenericViewSet.as_view({'get' : 'retrieve'})
+
+
+

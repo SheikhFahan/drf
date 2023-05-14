@@ -6,10 +6,11 @@ from django.shortcuts import get_object_or_404
 
 from .models import Product
 from .serializers import ProductSerializer
-from api.mixins import StaffEditorPermissionMixin
+from api.mixins import StaffEditorPermissionMixin, UserQuerySetMixin
 
 
 class ProductListCreateAPIView(
+    UserQuerySetMixin,
     StaffEditorPermissionMixin,
     generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -22,7 +23,16 @@ class ProductListCreateAPIView(
         content = serializer.validated_data.get('content') or None 
         if content is None:
             content = title 
-        serializer.save(content = content)
+        serializer.save(user = self.request.user, content = content)
+
+    # def get_queryset(self, *args, **kwargs):
+    #     qs = super().get_queryset()
+    #     user = self.request.user 
+
+    #     if not user.is_authenticated:
+    #         return Product.objects.none()
+
+    #     return qs.filter(user = user)
 
 product_list_create_view = ProductListCreateAPIView.as_view()
 

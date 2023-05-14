@@ -2,19 +2,25 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from .models import Product
-from .validators import validate_title
+from . import validators
+
+from api.serializers import UserPublicSerialzier
 
 class ProductSerializer(serializers.ModelSerializer):
+    owner = UserPublicSerialzier(source = 'user', read_only = True)
     my_discount = serializers.SerializerMethodField(read_only = True)
     edit_url = serializers.SerializerMethodField(read_only = True)
     url = serializers.HyperlinkedIdentityField(
         view_name = 'product-detail',
         lookup_field = 'pk' 
     )
-    title = serializers.CharField(validators = [validate_title])
+    title = serializers.CharField(validators = [validators.validate_title, 
+        validators.UniqueValidator])
+
     class Meta:
         model = Product
         fields = [
+            'owner',
             'url',
             'edit_url',
             'pk',
